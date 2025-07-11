@@ -1,0 +1,94 @@
+<!-- index.html - Página principal del sitio Amigurumis con Amor -->
+<!-- Contiene la estructura HTML y los enlaces a CSS y JS -->
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amigurumis con Amor</title>
+  <link rel="stylesheet" href="index.css" /> 
+</head>
+<body>
+
+  <!-- Splash screen (pantalla de carga) -->
+  <div id="splash">
+    <img src="C:\Users\casii\Desktop\amig html\media\logo.jpeg" alt="Logo Amigurumis con Amor" style="width: 700px;" />
+    
+  </div>
+
+  <!-- Contenido principal -->
+  <div id="contenido-principal" style="display: none;">
+    <header>
+      Amigurumis con Amor 💕
+    </header>
+
+    <nav>
+      <a href="#bienvenida">Inicio</a>
+      <a href="#animales">Animales</a>
+      <a href="#personajes">Personajes</a>
+      <a href="#otros">Otros</a>
+    </nav>
+
+    <section class="bienvenida" id="bienvenida">
+      <h2>¡Bienvenidos a nuestro mundo mágico de amigurumis!</h2>
+      <p>Hechos a mano con mucho amor. Descubrí figuras adorables que te van a enamorar. 🌸</p>
+    </section>
+
+  <!-- Galerías por categoría -->
+
+  <section class="galeria" id="animales">
+  <h3 class="subtitulo">🐱 Gatos</h3>
+  <div class="subgrupo-fila">
+    <img src="C:\Users\casii\Desktop\amig html\media\gato1.jpg" alt="Gatito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\gato2.jpg" alt="Gatito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\gato3.jpg" alt="Gatito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\gato4.jpg" alt="Gatito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\gato5.jpg" alt="Gatito" />
+    </section>
+     <section class="galeria" >
+    <h3 class="subtitulo">🐻 Osos</h3>
+  <div class="subgrupo-fila">
+    <img src="C:\Users\casii\Desktop\amig html\media\oso1.png" alt="Osito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\oso2.jpg" alt="Osito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\oso3.jpg" alt="Osito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\oso4.jpg" alt="Osito" />
+    <img src="C:\Users\casii\Desktop\amig html\media\oso5.jpg" alt="Osito" />
+    </section>
+    
+     <section class="galeria" >
+    <h3 class="subtitulo">🐰 Conejos</h3>
+  <div class="subgrupo-fila">
+    <img src="C:\Users\casii\Desktop\amig html\media\conejo.jpg" alt="Conejo" />
+    <img src="C:\Users\casii\Desktop\amig html\media\conejo1.jpg" alt="Conejo" />
+    <img src="C:\Users\casii\Desktop\amig html\media\conejo2.jpg" alt="Conejo" />
+    <img src="C:\Users\casii\Desktop\amig html\media\conejo3.jpg" alt="Conejo" />
+    <img src="C:\Users\casii\Desktop\amig html\media\conejo5.jpg" alt="Conejo" />
+    </section>
+</div>
+  
+  <footer>
+    <!-- Pie de página -->
+    © 2025 Amigurumis con Amor - Todos los derechos reservados
+  </footer>
+   
+  <!-- Botón flotante de WhatsApp -->
+<a href="https://wa.me/549XXXXXXXXXX" 
+   class="whatsapp" 
+   target="_blank" 
+   title="Escribinos por WhatsApp">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png" alt="WhatsApp">
+
+</a>
+<!-- Modal de imagen ampliada -->
+<div id="modal" class="modal">
+  <span class="cerrar">&times;</span>
+  <img class="modal-imagen" id="imagen-ampliada" />
+  <div class="descripcion-amigurumi" id="descripcion">
+    <h2 id="nombre-amigurumi"></h2>
+    <p id="historia-amigurumi"></p>
+    <a id="whatsapp-link" href="#" target="_blank">🔗 Consultar por WhatsApp</a>
+</div>
+<script src="index.js"></script> <!-- "script.js" -->  
+</body>
+</html>
