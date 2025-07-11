@@ -203,3 +203,13 @@ footer {
   font-weight: bold;
   cursor: pointer;
 }
+.logo {
+  max-width: 200px;
+  width: 100%;
+  height: auto;
+}
+@media (max-width: 768px) {
+  .logo {
+    max-width: 150px;
+  }
+}
