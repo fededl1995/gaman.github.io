@@ -6,21 +6,11 @@ window.addEventListener("load", function () {
     document.getElementById("contenido-principal").style.display = "block";
   }, 2500); // 2500 milisegundos = 2.5 segundos
 });
-const imagenes = [
-  "https://picnic.media/wp-content/uploads/2021/06/PORTADA-1140x700.jpg",
-  "https://acdn-us.mitiendanube.com/stores/001/935/440/products/img_3806-40a9a9f4d66513d0f617222679218351-1024-1024.jpeg",
-  "https://www.thesnuglies.com/wp-content/uploads/2023/06/tipos-de-amigurumi.png",
-  "https://patronamigurumi.top/wp-content/uploads/tortuga-1024x1017.jpg" ,
-  "https://devmedia.discovernikkei.org/articles/8911/amigurumi1.jpg" ,
-  "https://mymodernmet.com/wp/wp-content/uploads/2019/01/what-is-amigurumi-17.jpg"
-];
+// const imagenes = []; // replaced: now auto-build from media images
 
 let index = 0;
 
-setInterval(() => {
-  index = (index + 1) % imagenes.length;
-  document.body.style.backgroundImage = `url('${imagenes[index]}')`;
-}, 6000);
+// slideshow interval replaced below
 document.querySelectorAll(".subgrupo-fila img").forEach((img, i) => {
   img.addEventListener("click", () => {
     const modal = document.getElementById("modal");
@@ -78,3 +68,32 @@ document.getElementById("modal").addEventListener("click", (event) => {
     event.currentTarget.style.display = "none";
   }
 });
+
+/* === Background slideshow built from media images present in the page === */
+(function setupBackgroundFromMedia(){
+  // Collect unique image sources from the galleries
+  const imgs = Array.from(document.querySelectorAll(".subgrupo-fila img"));
+  const sources = Array.from(new Set(imgs.map(img => img.getAttribute("src")).filter(Boolean)));
+
+  // Fallback: if nothing found, keep current background without rotating
+  if (sources.length === 0) return;
+
+  // Preload images to avoid flashes
+  const preloaded = [];
+  sources.forEach(src => {
+    const im = new Image();
+    im.src = src;
+    preloaded.push(im);
+  });
+
+  let idx = 0;
+  function applyBg(i){
+    document.body.style.backgroundImage = "url('" + sources[i] + "')";
+  }
+  applyBg(idx);
+
+  setInterval(() => {
+    idx = (idx + 1) % sources.length;
+    applyBg(idx);
+  }, 6000);
+})();
