@@ -1,18 +1,39 @@
-<!-- index.html - Página principal del sitio Amigurumis con Amor -->
+<!-- index.html (hardened) -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gaman</title>
-  <link rel="stylesheet" href="index.css" /> 
+  <link rel="stylesheet" href="index.css" />
+  <noscript>
+    <style>
+      #splash { display:none !important; }
+      #contenido-principal { display:block !important; }
+    </style>
+  </noscript>
 </head>
 <body>
 
-  <!-- Splash screen (pantalla de carga) -->
+  <!-- Splash screen -->
   <div id="splash">
     <img src="media/logo.jpeg" alt="Logo" class="logo" />
   </div>
+
+  <!-- Tiny inline 'splash-killer' (runs even if index.js falla) -->
+  <script>
+  (function(){
+    function hide(){
+      var s = document.getElementById('splash');
+      var c = document.getElementById('contenido-principal');
+      if (s) s.style.display = 'none';
+      if (c) c.style.display = 'block';
+    }
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(hide, 300); });
+    window.addEventListener('load', function(){ setTimeout(hide, 300); });
+    setTimeout(hide, 3500); // fallback duro
+  })();
+  </script>
 
   <!-- Contenido principal -->
   <div id="contenido-principal" style="display: none;">
@@ -105,12 +126,12 @@
   
   <footer>© 2025 Amigurumis con Amor - Todos los derechos reservados</footer>
    
-  <!-- Botón flotante de WhatsApp -->
+  <!-- WhatsApp -->
   <a href="https://wa.me/1169754570" class="whatsapp" target="_blank" title="Escribinos por WhatsApp">
     <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png" alt="WhatsApp Icon">
   </a>
 
-  <!-- Modal de imagen ampliada -->
+  <!-- Modal -->
   <div id="modal" class="modal">
     <span class="cerrar">&times;</span>
     <img class="modal-imagen" id="imagen-ampliada" alt="Producto ampliado" />
@@ -119,9 +140,9 @@
       <p id="historia-amigurumi"></p>
       <a id="whatsapp-link" href="#" target="_blank">🔗 Consultar por WhatsApp</a>
     </div>
-  </div> <!-- CIERRE CORRECTO DEL MODAL -->
+  </div>
 
-  <!-- Carrito flotante -->
+  <!-- Carrito -->
   <aside class="cart" id="cartBox">
     <h3>🧺 Carrito</h3>
     <div id="cartItems"></div>
@@ -133,7 +154,7 @@
     </div>
   </aside>
 
-  <!-- Scripts al final del body -->
+  <!-- Scripts -->
   <script src="index.js"></script>
 </body>
 </html>
