@@ -177,3 +177,132 @@ document.getElementById("modal").addEventListener("click", (event) => {
     }
   });
 })();
+
+
+/* === Carrito (localStorage) === */
+const CART_KEY = "carrito_tienda";
+function getCart(){ try { return JSON.parse(localStorage.getItem(CART_KEY)||"[]"); } catch(e){ return []; } }
+function saveCart(c){ localStorage.setItem(CART_KEY, JSON.stringify(c)); renderCart(); }
+function addToCart(item){
+  const cart = getCart();
+  const idx = cart.findIndex(x => x.id === item.id);
+  if (idx >= 0) cart[idx].qty += (item.qty||1);
+  else cart.push({ id:item.id, nombre:item.nombre, precio:item.precio, qty:item.qty||1 });
+  saveCart(cart);
+}
+function removeFromCart(id){ saveCart(getCart().filter(i => i.id !== id)); }
+function renderCart(){
+  const cart = getCart();
+  const wrap = document.getElementById("cartItems");
+  if (!wrap) return;
+  wrap.innerHTML = "";
+  let total = 0;
+  cart.forEach(i => {
+    const sub = i.precio * i.qty;
+    total += sub;
+    const line = document.createElement("div");
+    line.className = "line";
+    line.innerHTML = `
+      <div>
+        <strong>${i.nombre}</strong>
+        <div class="meta">$ ${i.precio.toLocaleString("es-AR")} x ${i.qty}</div>
+      </div>
+      <div class="row">
+        <div>$ ${sub.toLocaleString("es-AR")}</div>
+        <button class="del" title="Quitar" data-del="${i.id}">✕</button>
+      </div>
+    `;
+    wrap.appendChild(line);
+  });
+  const totalEl = document.getElementById("cartTotal");
+  if (totalEl) totalEl.textContent = `$ ${total.toLocaleString("es-AR")}`;
+  wrap.querySelectorAll("[data-del]").forEach(btn => {
+    btn.addEventListener("click", () => removeFromCart(btn.getAttribute("data-del")));
+  });
+}
+document.getElementById("clearCart")?.addEventListener("click", () => saveCart([]));
+document.getElementById("checkout")?.addEventListener("click", () => {
+  const cart = getCart();
+  if (!cart.length) return alert("Tu carrito está vacío.");
+  const resumen = cart.map(i => `${i.nombre} x${i.qty} ($${i.precio.toLocaleString("es-AR")})`).join(", ");
+  const total = document.getElementById("cartTotal")?.textContent || "";
+  const msg = encodeURIComponent(`Pedido: ${resumen} | Total: ${total}`);
+  window.open(`https://wa.me/5491169754570?text=${msg}`, "_blank");
+});
+window.addEventListener("load", renderCart);
+
+
+/* === Integración ALT->producto (galería existente) === */
+let _productosPorNombre = {}; // nombre normalizado -> producto
+
+function normName(s){ return String(s||"").trim().toLowerCase(); }
+
+async function getSheetProducts(){
+  // Reutiliza el bloque de Google Sheets si ya existe, sino define uno mínimo
+  if (typeof fetchProducts === "function"){
+    return await fetchProducts();
+  }
+  // Definición mínima (por si el bloque no está)
+  const SHEET_ID   = "1nJIU0ky7Ih_6zUF1M2ui3JVsLmdLXwgVXxpWt3ToiqM";
+  const SHEET_NAME = "Hoja 1";
+  const SHEET_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&cachebust=${Date.now()}`;
+  const res = await fetch(SHEET_URL, { cache: "no-store" });
+  const txt = await res.text();
+  const json = JSON.parse(txt.substring(47, txt.length - 2));
+  const cols = json.table.cols.map(c => (c.label || "").toLowerCase().trim());
+  const rows = json.table.rows.map(r => r.c.map(c => c?.v ?? ""));
+  const idx = { id: cols.indexOf("id"), nombre: cols.indexOf("nombre"), precio: cols.indexOf("precio"), activo: cols.indexOf("activo") };
+  return rows.map(r => ({
+    id: String(idx.id>=0 ? r[idx.id] : ""),
+    nombre: String(idx.nombre>=0 ? r[idx.nombre] : ""),
+    precio: Number(idx.precio>=0 ? r[idx.precio] : 0),
+    activo: String(idx.activo>=0 ? r[idx.activo] : "").toLowerCase() !== "false"
+  })).filter(p => p.activo && p.nombre && Number.isFinite(p.precio));
+}
+
+async function vincularGaleriaConCarrito(){
+  try {
+    const productos = await getSheetProducts();
+    _productosPorNombre = {};
+    productos.forEach(p => { _productosPorNombre[normName(p.nombre)] = p; });
+
+    // Cuando el usuario abre el modal de una imagen, mostramos precio si hay match y permitimos "Agregar al carrito"
+    const modal = document.getElementById("modal");
+    const precioEl = document.getElementById("precio-amigurumi");
+    const btnAdd = document.getElementById("agregar-carrito");
+    const nombreEl = document.getElementById("nombre-amigurumi");
+
+    // Guardamos el último producto match en memoria temporal
+    let productoActual = null;
+
+    // Reemplazamos el listener existente para click en imagen, sin romper tu lógica actual
+    document.querySelectorAll(".subgrupo-fila img").forEach(img => {
+      img.addEventListener("click", () => {
+        const alt = img.alt || "";
+        const p = _productosPorNombre[normName(alt)] || null;
+        productoActual = p;
+
+        if (p){
+          if (nombreEl) nombreEl.textContent = p.nombre;
+          if (precioEl) precioEl.textContent = `$ ${p.precio.toLocaleString("es-AR")}`;
+        } else {
+          if (precioEl) precioEl.textContent = ``;
+        }
+      });
+    });
+
+    btnAdd?.addEventListener("click", () => {
+      if (!productoActual){
+        alert("No tenemos el precio cargado de esta pieza todavía. Nombrá el producto en Sheets igual que el ALT de la imagen.");
+        return;
+      }
+      addToCart({ id: productoActual.id || normName(productoActual.nombre), nombre: productoActual.nombre, precio: productoActual.precio, qty: 1 });
+      // Cerrar modal opcionalmente
+      if (modal) modal.style.display = "none";
+    });
+  } catch (e){
+    console.error("Error vinculando galería con carrito:", e);
+  }
+}
+
+window.addEventListener("load", vincularGaleriaConCarrito);

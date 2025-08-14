@@ -132,8 +132,23 @@
   <div class="descripcion-amigurumi" id="descripcion">
     <h2 id="nombre-amigurumi"></h2>
     <p id="historia-amigurumi"></p>
+    <p><strong id="precio-amigurumi"></strong></p>
+    <button class="btn-buy" id="agregar-carrito" type="button">Agregar al carrito</button>
     <a id="whatsapp-link" href="#" target="_blank">🔗 Consultar por WhatsApp</a>
 </div>
 <script src="index.js"></script> <!-- "script.js" -->  
+
+  <!-- Carrito flotante -->
+  <aside class="cart" id="cartBox">
+    <h3>🧺 Carrito</h3>
+    <div id="cartItems"></div>
+    <hr>
+    <div><strong>Total: </strong><span id="cartTotal">$ 0</span></div>
+    <div class="row" style="margin-top:8px;">
+      <button class="btn-buy" id="clearCart" type="button">Vaciar</button>
+      <button class="btn-buy" id="checkout" type="button">Finalizar</button>
+    </div>
+  </aside>
+
 </body>
 </html>
