@@ -1,61 +1,99 @@
-<!-- index.html - Página principal del sitio Amigurumis con Amor -->
-<!-- Contiene la estructura HTML y los enlaces a CSS y JS -->
 <!DOCTYPE html>
-
 <html lang="es">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>Amigurumis con Amor</title>
-<link href="index.css" rel="stylesheet"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amigurumis con Amor</title>
+  <link rel="stylesheet" href="index_ok.css" />
 </head>
 <body>
-<!-- Splash screen (pantalla de carga) -->
-<div id="splash">
-<img alt="Logo Amigurumis con Amor" class="logo" decoding="async" loading="lazy" src="media/logo.jpeg"/>
-</div>
-<!-- Contenido principal -->
-<div id="contenido-principal" style="display: none;">
-<header>
+  <div id="splash">
+    <img src="media/logo.jpeg" alt="Logo Amigurumis con Amor" class="logo" decoding="async" />
+  </div>
+
+  <div id="contenido-principal" style="display:none;">
+    <header>
       Amigurumis con Amor 💕
-    <button id="cart-btn">🛒 Carrito <span id="cart-count">0</span></button></header>
-<nav>
-<a href="#bienvenida">Inicio</a>
-<a href="#animales">Animales</a>
-<a href="#personajes">Personajes</a>
-<a href="#otros">Otros</a>
-</nav>
-<section class="bienvenida" id="bienvenida">
-<h2>¡Bienvenidos a nuestro mundo mágico de amigurumis!</h2>
-<p>Hechos a mano con mucho amor. Descubrí figuras adorables que te van a enamorar. 🌸</p>
-</section>
-<!-- Galerías por categoría -->
-<section class="galeria" id="Amigurumis">
-<h3 class="subtitulo">🐱 Amigurumis</h3>
-<div class="subgrupo-fila"><div class="producto" data-nombre="Jirafa1"><img alt="Jirafa1" decoding="async" loading="lazy" src="media/am.jirafa1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo"><img alt="conejo" decoding="async" loading="lazy" src="media/ami.conejo.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo rosa"><img alt="conejo rosa" decoding="async" loading="lazy" src="media/ami.conejor.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="dinosaurio"><img alt="dinosaurio" decoding="async" loading="lazy" src="media/ami.dino.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="dinosaurio"><img alt="dinosaurio" decoding="async" loading="lazy" src="media/ami.dino1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="elefante"><img alt="elefante" decoding="async" loading="lazy" src="media/ami.elefante.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="kit jirafa"><img alt="kit jirafa" decoding="async" loading="lazy" src="media/ami.juegojirafa.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="muñeca"><img alt="muñeca" decoding="async" loading="lazy" src="media/ami.muñeca.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="oso"><img alt="oso" decoding="async" loading="lazy" src="media/ami.oso.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="pulpo"><img alt="pulpo" decoding="async" loading="lazy" src="media/ami.pulpo.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="tigre"><img alt="tigre" decoding="async" loading="lazy" src="media/ami.tigre.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="tortuga"><img alt="tortuga" decoding="async" loading="lazy" src="media/ami.tortuga.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="tortuga"><img alt="tortuga" decoding="async" loading="lazy" src="media/ami.tortuga1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="zorro"><img alt="zorro" decoding="async" loading="lazy" src="media/ami.zorro1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="zorro"><img alt="zorro" decoding="async" loading="lazy" src="media/ami.zorro.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo"><img alt="conejo" decoding="async" loading="lazy" src="media/ami.canguro.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="capibara"><img alt="capibara" decoding="async" loading="lazy" src="media/ami.capibara.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="capibara1"><img alt="capibara1" decoding="async" loading="lazy" src="media/ami.capibara1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="capibara2"><img alt="capibara2" decoding="async" loading="lazy" src="media/ami.capibara2.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="capibara3"><img alt="capibara3" decoding="async" loading="lazy" src="media/ami.capibara3.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="chupete"><img alt="chupete" decoding="async" loading="lazy" src="media/ami.chupete.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="chupete"><img alt="chupete" decoding="async" loading="lazy" src="media/ami.chupete1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="coala"><img alt="coala" decoding="async" loading="lazy" src="media/ami.coala.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejoss"><img alt="conejoss" decoding="async" loading="lazy" src="media/ami.conejoss.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="coneja"><img alt="coneja" decoding="async" loading="lazy" src="media/ami.coneja.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo"><img alt="conejo" decoding="async" loading="lazy" src="media/ami.conejo1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo"><img alt="conejo" decoding="async" loading="lazy" src="media/ami.conejo.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo"><img alt="conejo" decoding="async" loading="lazy" src="media/ami.conejop.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo"><img alt="conejo" decoding="async" loading="lazy" src="media/ami.conejov.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="conejo"><img alt="conejo" decoding="async" loading="lazy" src="media/ami.conejocanasta.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="dona"><img alt="dona" decoding="async" loading="lazy" src="media/ami.dona.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="jirafa"><img alt="jirafa" decoding="async" loading="lazy" src="media/ami.jirafa.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="jirafa"><img alt="jirafa" decoding="async" loading="lazy" src="media/ami.juegoos.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="kitbb"><img alt="kitbb" decoding="async" loading="lazy" src="media/ami.kitbb.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="kitsonajeros"><img alt="kitsonajeros" decoding="async" loading="lazy" src="media/ami.kitsonajero.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="perro"><img alt="perro" decoding="async" loading="lazy" src="media/ami.perros.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="perro"><img alt="perro" decoding="async" loading="lazy" src="media/ami.perros1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="pulpo"><img alt="pulpo" decoding="async" loading="lazy" src="media/ami.pulpo.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="pulpo"><img alt="pulpo" decoding="async" loading="lazy" src="media/ami.pulpo1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="salchi"><img alt="salchi" decoding="async" loading="lazy" src="media/ami.salchi.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="salchi"><img alt="salchi" decoding="async" loading="lazy" src="media/ami.salchi11.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="salchi"><img alt="salchi" decoding="async" loading="lazy" src="media/ami.salchis.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="salchi"><img alt="salchi" decoding="async" loading="lazy" src="media/ami.salchis1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="sonajeros oso"><img alt="sonajeros oso" decoding="async" loading="lazy" src="media/ami.sonajerooso.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="tortuga"><img alt="tortuga" decoding="async" loading="lazy" src="media/ami.tortur.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="tortuga"><img alt="tortuga" decoding="async" loading="lazy" src="media/ami.tortuga.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="tortuga"><img alt="tortuga" decoding="async" loading="lazy" src="media/ami.tortuga1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div></div>
-</section>
-<section class="galeria">
-<h3 class="subtitulo">Resina</h3>
-<div class="subgrupo-fila"><div class="producto" data-nombre="cenisero"><img alt="cenisero" decoding="async" loading="lazy" src="media/res.ceniseros.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="ceniseros"><img alt="ceniseros" decoding="async" loading="lazy" src="media/res.cemoseros1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="collar"><img alt="collar" decoding="async" loading="lazy" src="media/res.collarp.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="corazon"><img alt="corazon" decoding="async" loading="lazy" src="media/res.corazon.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="corazon"><img alt="corazon" decoding="async" loading="lazy" src="media/res.corazon1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="cuadro"><img alt="cuadro" decoding="async" loading="lazy" src="media/res.cuadro.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="cuadros"><img alt="cuadros" decoding="async" loading="lazy" src="media/res.cuadros.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="D"><img alt="D" decoding="async" loading="lazy" src="media/res.d.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="D"><img alt="D" decoding="async" loading="lazy" src="media/res.d1.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="kiwi"><img alt="kiwi" decoding="async" loading="lazy" src="media/res.kiwic.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="R"><img alt="R" decoding="async" loading="lazy" src="media/res.r.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div><div class="producto" data-nombre="Regalos"><img alt="Regalos" decoding="async" loading="lazy" src="media/res.regalos.jpeg"/><p class="precio">Consultando precio...</p><input class="cantidad" min="1" type="number" value="1"/></div></div>
-</section>
-</div>
-<footer>
-<!-- Pie de página -->
-    © 2025 Amigurumis con Amor - Todos los derechos reservados
-  </footer>
-<!-- Botón flotante de WhatsApp -->
-<a class="whatsapp" href="https://wa.me/1169754570" target="_blank" title="Escribinos por WhatsApp">
-<img alt="WhatsApp" decoding="async" loading="lazy" src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png"/>
-</a>
-<!-- Modal de imagen ampliada -->
-<div class="modal" id="modal">
-<span class="cerrar">×</span>
-<img class="modal-imagen" decoding="async" id="imagen-ampliada" loading="lazy"/>
-<div class="descripcion-amigurumi" id="descripcion">
-<h2 id="nombre-amigurumi"></h2>
-<p id="historia-amigurumi"></p>
-<a href="https://wa.me/1169754570" id="whatsapp-link" target="_blank">🔗 Consultar por WhatsApp</a>
-<p id="precio-modal">Precio: cargando...</p><input id="qty-modal" min="1" type="number" value="1"/><button id="add-to-cart">Agregar al carrito</button></div>
-<script src="index.js"></script> <!-- "script.js" -->
-</div><div id="cart-modal"><div class="cart-box"><h3>🛒 Tu carrito</h3><div class="cart-items" id="cart-items"></div><div class="cart-total"><span id="cart-total-label">Total</span><span id="cart-total-amount">$0</span></div><div class="cart-actions"><button class="btn-close-cart" id="close-cart">Cerrar</button><button class="btn-clear-cart" id="clear-cart">Vaciar</button><button class="btn-checkout" id="checkout-cart">Finalizar</button></div></div></div></body>
+      <button id="cart-btn">🛒 Carrito <span id="cart-count">0</span></button>
+    </header>
+
+    <nav>
+      <a href="#bienvenida">Inicio</a>
+      <a href="#Amigurumis">Animales</a>
+      <a href="#Resina">Resina</a>
+    </nav>
+
+    <section class="bienvenida" id="bienvenida">
+      <h2>¡Bienvenidos a nuestro mundo mágico de amigurumis!</h2>
+      <p>Hechos a mano con mucho amor. Descubrí figuras adorables que te van a enamorar. 🌸</p>
+    </section>
+
+    <section class="galeria" id="Amigurumis">
+      <h3 class="subtitulo">🐱 Amigurumis</h3>
+      <div class="subgrupo-fila">
+        <img src="media/am.jirafa1.jpeg" alt="Jirafa1" loading="lazy" decoding="async" />
+        <img src="media/ami.conejo.jpeg" alt="conejo" loading="lazy" decoding="async" />
+        <img src="media/ami.conejor.jpeg" alt="conejo rosa" loading="lazy" decoding="async" />
+        <img src="media/ami.dino.jpeg" alt="dinosaurio" loading="lazy" decoding="async" />
+        <img src="media/ami.dino1.jpeg" alt="dinosaurio" loading="lazy" decoding="async" />
+        <img src="media/ami.elefante.jpeg" alt="elefante" loading="lazy" decoding="async" />
+        <img src="media/ami.juegojirafa.jpeg" alt="kit jirafa" loading="lazy" decoding="async" />
+        <img src="media/ami.muñeca.jpeg" alt="muñeca" loading="lazy" decoding="async" />
+        <img src="media/ami.oso.jpeg" alt="oso" loading="lazy" decoding="async" />
+        <img src="media/ami.pulpo.jpeg" alt="pulpo" loading="lazy" decoding="async" />
+        <img src="media/ami.tigre.jpeg" alt="tigre" loading="lazy" decoding="async" />
+        <img src="media/ami.tortuga.jpeg" alt="tortuga" loading="lazy" decoding="async" />
+        <img src="media/ami.tortuga1.jpeg" alt="tortuga" loading="lazy" decoding="async" />
+        <img src="media/ami.zorro1.jpeg" alt="zorro" loading="lazy" decoding="async" />
+        <img src="media/ami.zorro.jpeg" alt="zorro" loading="lazy" decoding="async" />
+      </div>
+    </section>
+
+    <section class="galeria" id="Resina">
+      <h3 class="subtitulo">Resina</h3>
+      <div class="subgrupo-fila">
+        <img src="media/res.ceniseros.jpeg" alt="cenisero" loading="lazy" decoding="async" />
+        <img src="media/res.cemoseros1.jpeg" alt="ceniseros" loading="lazy" decoding="async" />
+        <img src="media/res.collarp.jpeg" alt="collar" loading="lazy" decoding="async" />
+        <img src="media/res.corazon.jpeg" alt="corazon" loading="lazy" decoding="async" />
+      </div>
+    </section>
+
+    <footer>© 2025 Amigurumis con Amor - Todos los derechos reservados</footer>
+
+    <a href="https://wa.me/1169754570" class="whatsapp" target="_blank" title="Escribinos por WhatsApp">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png" alt="WhatsApp" decoding="async" />
+    </a>
+  </div>
+
+  <div id="modal" class="modal">
+    <span class="cerrar" id="cerrar-modal">&times;</span>
+    <img class="modal-imagen" id="imagen-ampliada" />
+    <div class="descripcion-amigurumi" id="descripcion">
+      <h2 id="nombre-amigurumi"></h2>
+      <p id="historia-amigurumi"></p>
+      <p id="precio-modal">Precio: consultando...</p>
+      <input type="number" id="qty-modal" min="1" value="1" />
+      <button id="add-to-cart">Agregar al carrito</button>
+      <a id="whatsapp-link" href="https://wa.me/1169754570" target="_blank">🔗 Consultar por WhatsApp</a>
+    </div>
+  </div>
+
+  <div id="cart-modal">
+    <div class="cart-box">
+      <h3>🛒 Tu carrito</h3>
+      <div class="cart-items" id="cart-items"></div>
+      <div class="cart-total">
+        <span>Total</span><span id="cart-total-amount">$0</span>
+      </div>
+      <div class="cart-actions">
+        <button class="btn-close-cart" id="close-cart">Cerrar</button>
+        <button class="btn-clear-cart" id="clear-cart">Vaciar</button>
+        <button class="btn-checkout" id="checkout-cart">Finalizar</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="index_ok.js"></script>
+</body>
 </html>
