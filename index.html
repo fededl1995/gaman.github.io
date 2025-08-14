@@ -1,160 +1,34 @@
-<!-- index.html (hardened) -->
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Gaman</title>
-  <link rel="stylesheet" href="index.css" />
-  <noscript>
-    <style>
-      #splash { display:none !important; }
-      #contenido-principal { display:block !important; }
-    </style>
-  </noscript>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TEST Modal</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin:0; padding:24px; }
+    .subgrupo-fila img { width: 160px; height: auto; cursor: pointer; border-radius: 8px; }
+    .modal { position: fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
+    .modal.open { display:flex; }
+    .modal-content { background:#fff; padding:16px; border-radius:12px; max-width:90vw; text-align:center; }
+    .cerrar { position:absolute; top:16px; right:20px; font-size:28px; color:#fff; cursor:pointer; }
+  </style>
 </head>
 <body>
-
-  <!-- Splash screen -->
-  <div id="splash">
-    <img src="media/logo.jpeg" alt="Logo" class="logo" />
+  <h1>Prueba de apertura de productos</h1>
+  <p>Hacé clic en la imagen. Si el modal no abre, el problema es de capas/eventos en tu sitio.</p>
+  <div class="subgrupo-fila">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/JPEG_example_flower.jpg" alt="Flor de prueba">
   </div>
 
-  <!-- Tiny inline 'splash-killer' (runs even if index.js falla) -->
-  <script>
-  (function(){
-    function hide(){
-      var s = document.getElementById('splash');
-      var c = document.getElementById('contenido-principal');
-      if (s) s.style.display = 'none';
-      if (c) c.style.display = 'block';
-    }
-    document.addEventListener('DOMContentLoaded', function(){ setTimeout(hide, 300); });
-    window.addEventListener('load', function(){ setTimeout(hide, 300); });
-    setTimeout(hide, 3500); // fallback duro
-  })();
-  </script>
-
-  <!-- Contenido principal -->
-  <div id="contenido-principal" style="display: none;">
-    <header>Amigurumis con Amor 💕</header>
-
-    <nav>
-      <a href="#bienvenida">Inicio</a>
-      <a href="#animales">Animales</a>
-      <a href="#personajes">Personajes</a>
-      <a href="#otros">Otros</a>
-    </nav>
-
-    <section class="bienvenida" id="bienvenida">
-      <h2>¡Bienvenidos a nuestro mundo mágico de amigurumis!</h2>
-      <p>Hechos a mano con mucho amor. Descubrí figuras adorables que te van a enamorar. 🌸</p>
-    </section>
-
-    <!-- Galerías por categoría -->
-    <section class="galeria" id="Amigurumis">
-      <h3 class="subtitulo">🐱 Amigurumis</h3>
-      <div class="subgrupo-fila">
-        <img src="media/am.jirafa1.jpeg" alt="Am Jirafa1" />
-        <img src="media/ami.conejo.jpeg" alt="Conejo" />
-        <img src="media/ami.conejor.jpeg" alt="Conejor" />
-        <img src="media/ami.dino.jpeg" alt="Dino" />
-        <img src="media/ami.dino1.jpeg" alt="Dino1" />
-        <img src="media/ami.elefante.jpeg" alt="Elefante" /> 
-        <img src="media/ami.juegojirafa.jpeg" alt="Juegojirafa" />
-        <img src="media/ami.muñeca.jpeg" alt="Muñeca" />  
-        <img src="media/ami.oso.jpeg" alt="Oso" />
-        <img src="media/ami.pulpo.jpeg" alt="Pulpo" />  
-        <img src="media/ami.tigre.jpeg" alt="Tigre" />
-        <img src="media/ami.tortuga.jpeg" alt="Tortuga" />  
-        <img src="media/ami.tortuga1.jpeg" alt="Tortuga1" />
-        <img src="media/ami.zorro1.jpeg" alt="Zorro1" /> 
-        <img src="media/ami.zorro.jpeg" alt="Zorro" /> 
-        <img src="media/ami.canguro.jpeg" alt="Canguro" />
-        <img src="media/ami.capibara.jpeg" alt="Capibara" />  
-        <img src="media/ami.capibara1.jpeg" alt="Capibara1" />
-        <img src="media/ami.capibara2.jpeg" alt="Capibara2" />  
-        <img src="media/ami.capibara3.jpeg" alt="Capibara3" />
-        <img src="media/ami.chupete.jpeg" alt="Chupete" />
-        <img src="media/ami.chupete1.jpeg" alt="Chupete1" />
-        <img src="media/ami.coala.jpeg" alt="Coala" />
-        <img src="media/ami.conejoss.jpeg" alt="Conejoss" />
-        <img src="media/ami.coneja.jpeg" alt="Coneja" />
-        <img src="media/ami.conejo1.jpeg" alt="Conejo1" />
-        <img src="media/ami.conejo.jpeg" alt="Conejo" />
-        <img src="media/ami.conejop.jpeg" alt="Conejop" />
-        <img src="media/ami.conejov.jpeg" alt="Conejov" />
-        <img src="media/ami.conejocanasta.jpeg" alt="Conejocanasta" />
-        <img src="media/ami.dona.jpeg" alt="Dona" />
-        <img src="media/ami.jirafa.jpeg" alt="Jirafa" />
-        <img src="media/ami.juegoos.jpeg" alt="Juegoos" />
-        <img src="media/ami.kitbb.jpeg" alt="Kitbb" />
-        <img src="media/ami.kitsonajero.jpeg" alt="Kitsonajero" />
-        <img src="media/ami.perros.jpeg" alt="Perros" />
-        <img src="media/ami.perros1.jpeg" alt="Perros1" />
-        <img src="media/ami.pulpo.jpeg" alt="Pulpo" />
-        <img src="media/ami.pulpo1.jpeg" alt="Pulpo1" />
-        <img src="media/ami.salchi.jpeg" alt="Salchi" />
-        <img src="media/ami.salchi11.jpeg" alt="Salchi11" />
-        <img src="media/ami.salchis.jpeg" alt="Salchis" />
-        <img src="media/ami.salchis1.jpeg" alt="Salchis1" />
-        <img src="media/ami.sonajerooso.jpeg" alt="Sonajerooso" />
-        <img src="media/ami.tortur.jpeg" alt="Tortur" />
-        <img src="media/ami.tortuga.jpeg" alt="Tortuga" />
-        <img src="media/ami.tortuga1.jpeg" alt="Tortuga1" />
-      </div>
-    </section>
-
-    <section class="galeria">
-      <h3 class="subtitulo">Resina</h3>
-      <div class="subgrupo-fila">
-        <img src="media/res.ceniseros.jpeg" alt="Ceniseros" />
-        <img src="media/res.cemoseros1.jpeg" alt="Cemoseros1" />
-        <img src="media/res.collarp.jpeg" alt="Collarp" />
-        <img src="media/res.corazon.jpeg" alt="Corazon" />
-        <img src="media/res.corazon1.jpeg" alt="Corazon1" />
-        <img src="media/res.cuadro.jpeg" alt="Cuadro" />
-        <img src="media/res.cuadros.jpeg" alt="Cuadros" />
-        <img src="media/res.d.jpeg" alt="D" />
-        <img src="media/res.d1.jpeg" alt="D1" />
-        <img src="media/res.kiwic.jpeg" alt="Kiwic" />
-        <img src="media/res.r.jpeg" alt="R" />
-        <img src="media/res.regalos.jpeg" alt="Regalos" />
-      </div>
-    </section>
-  </div>
-  
-  <footer>© 2025 Amigurumis con Amor - Todos los derechos reservados</footer>
-   
-  <!-- WhatsApp -->
-  <a href="https://wa.me/1169754570" class="whatsapp" target="_blank" title="Escribinos por WhatsApp">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/WhatsApp_icon.png" alt="WhatsApp Icon">
-  </a>
-
-  <!-- Modal -->
   <div id="modal" class="modal">
     <span class="cerrar">&times;</span>
-    <img class="modal-imagen" id="imagen-ampliada" alt="Producto ampliado" />
-    <div class="descripcion-amigurumi" id="descripcion">
-      <h2 id="nombre-amigurumi"></h2>
-      <p id="historia-amigurumi"></p>
-      <a id="whatsapp-link" href="#" target="_blank">🔗 Consultar por WhatsApp</a>
+    <div class="modal-content">
+      <h2 id="nombre"></h2>
+      <img id="img" alt="" style="max-width:60vw;max-height:50vh;border-radius:8px;">
+      <p>Este es un modal de prueba.</p>
     </div>
   </div>
 
-  <!-- Carrito -->
-  <aside class="cart" id="cartBox">
-    <h3>🧺 Carrito</h3>
-    <div id="cartItems"></div>
-    <hr>
-    <div><strong>Total: </strong><span id="cartTotal">$ 0</span></div>
-    <div class="row" style="margin-top:8px;">
-      <button class="btn-buy" id="clearCart" type="button">Vaciar</button>
-      <button class="btn-buy" id="checkout" type="button">Finalizar</button>
-    </div>
-  </aside>
-
-  <!-- Scripts -->
-  <script src="index.js"></script>
+  <script src="test.js"></script>
 </body>
 </html>
