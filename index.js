@@ -256,7 +256,7 @@ function renderCart() {
 // Integración de precios desde Google Sheets
 // =========================
 const SHEET_ID = "1nJIU0ky7Ih_6zUF1M2ui3JVsLmdLXwgVXxpWt3ToiqM";
-const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+const GVIZ_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRHikMDQhLz92_Wz9LUvUor4JeUFcVJ2bmslpRgnlXZNxX-ig7UBKoI4JfMKTqHFfE5Gwv7OSDpsML8/gviz/tq?tqx=out:json";
 
 const priceIndex = {}; // key normalizado -> { nombre, precioNumber }
 
