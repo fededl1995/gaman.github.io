@@ -65,7 +65,30 @@ document.querySelectorAll(".subgrupo-fila img").forEach((img) => {
     nombreEl.textContent = nombre;
     descripcionEl.textContent = descripcion;
 
-    const mensaje = encodeURIComponent(`Hola 👋 Me interesa el producto: ${nombre}. ¿Me pasás precio, colores y demora?`);
+    
+    // Precio desde Sheets (si existe)
+    const priceData = tryGetPriceForImage(img, nombre);
+    let precioTxt = "";
+    let precioNumber = null;
+    if (priceData && typeof priceData.precioNumber === "number") {
+      precioNumber = priceData.precioNumber;
+      precioTxt = "Precio: " + formatARS(precioNumber);
+    } else {
+      precioTxt = "Precio: consultar";
+    }
+    // Inserta/actualiza bloque de precio
+    let priceBlock = document.getElementById("modal-price");
+    if (!priceBlock) {
+      priceBlock = document.createElement("p");
+      priceBlock.id = "modal-price";
+      priceBlock.style.marginTop = "8px";
+      priceBlock.style.fontWeight = "600";
+      document.getElementById("descripcion").appendChild(priceBlock);
+    }
+    priceBlock.textContent = precioTxt;
+    // Guarda en dataset del modal para usar al agregar al carrito
+    document.getElementById("descripcion").dataset.priceNumber = (precioNumber != null ? String(precioNumber) : "");
+const mensaje = encodeURIComponent(`Hola 👋 Me interesa el producto: ${nombre}. ¿Me pasás precio, colores y demora?`);
     link.href = WHATSAPP_BASE + mensaje;
 
     modal.style.display = "flex";
@@ -130,7 +153,9 @@ function renderCart() {
   box.innerHTML = "";
   let totalItems = 0;
 
-  cartState.items.forEach(it => {
+  
+  let totalAmount = 0;
+cartState.items.forEach(it => {
     totalItems += it.qty;
     const row = document.createElement("div");
     row.className = "cart-row";
@@ -143,7 +168,18 @@ function renderCart() {
     const name = document.createElement("div");
     name.textContent = `${it.nombre}`;
 
-    const controls = document.createElement("div");
+    
+    const priceInfo = document.createElement("div");
+    priceInfo.style.fontSize = "0.9em";
+    priceInfo.style.opacity = "0.8";
+    if (typeof it.price === "number") {
+      const line = it.price * it.qty;
+      totalAmount += line;
+      priceInfo.textContent = `${formatARS(it.price)} c/u · ${formatARS(line)} subtotal`;
+    } else {
+      priceInfo.textContent = `Precio: consultar`;
+    }
+const controls = document.createElement("div");
     controls.style.display = "flex";
     controls.style.alignItems = "center";
     controls.style.gap = "6px";
@@ -182,12 +218,18 @@ function renderCart() {
     controls.append(minus, qty, plus, remove);
     row.append(name, controls);
     box.appendChild(row);
-  });
+  
+    // Segunda fila con precios
+    const row2 = document.createElement("div");
+    row2.style.display = "flex";
+    row2.style.justifyContent = "space-between";
+    row2.style.padding = "0 0 8px 0";
+    row2.append(priceInfo, document.createElement("div"));
+    box.appendChild(row2);
+});
 
   // No tenemos precios; mostramos total como cantidad de ítems
-  totalSpan.textContent = totalItems.toString();
-
-  if (header) {
+  totalSpan.textContent = (totalAmount > 0 ? formatARS(totalAmount) : totalItems.toString());if (header) {
     header.textContent = `🧺 Carrito (${totalItems})`;
   }
 }
@@ -253,6 +295,25 @@ function renderCart() {
 })();
 
 // Botones Vaciar / Finalizar
+
+  // Precio almacenado en modal (si existe)
+  const descBox = document.getElementById("descripcion");
+  let priceNum = null;
+  if (descBox && descBox.dataset && descBox.dataset.priceNumber) {
+    const p = parseFloat(descBox.dataset.priceNumber);
+    if (isFinite(p)) priceNum = p;
+  }
+
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    cartState.items.push({id, nombre, qty, price: priceNum});
+  }
+  renderCart();
+}); // addBtn click
+})(); // injectModalControls
+
+// Botones Vaciar / Finalizar
 (function setupCartButtons(){
   const btnClear = document.getElementById("clearCart");
   const btnCheckout = document.getElementById("checkout");
@@ -276,3 +337,106 @@ function renderCart() {
 
 // Inicializa contador en 0
 renderCart();
+
+
+
+// =========================
+// Integración de precios desde Google Sheets
+// =========================
+const SHEET_ID = "1nJIU0ky7Ih_6zUF1M2ui3JVsLmdLXwgVXxpWt3ToiqM"; // provisto por el usuario
+// Toma la PRIMERA hoja por defecto (gviz) sin necesidad de publicar explícitamente si está "Cualquiera con el enlace - lector"
+const GVIZ_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+
+const priceIndex = {
+  // key normalizado -> { nombre, precioNumber }
+};
+
+function normalizeKey(s) {
+  if (s == null) return "";
+  s = String(s).toLowerCase();
+  // quita extensión de archivo
+  s = s.replace(/\.(jpg|jpeg|png|webp)$/g, "");
+  // reemplaza separadores comunes por espacio
+  s = s.replace(/[._\-]+/g, " ");
+  // quita tildes
+  s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  // quita todo lo que no sea alfanumérico
+  s = s.replace(/[^a-z0-9]+/g, " ").trim();
+  return s;
+}
+
+function numberFromAny(v) {
+  if (v == null) return null;
+  if (typeof v === "number") return v;
+  const s = String(v).replace(/\./g, "").replace(",", ".").replace(/[^0-9.]/g, "");
+  const n = parseFloat(s);
+  return isFinite(n) ? n : null;
+}
+
+function formatARS(n) {
+  try {
+    return new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 }).format(n);
+  } catch {
+    return "$ " + Math.round(n);
+  }
+}
+
+async function loadPricesFromSheet() {
+  try {
+    const res = await fetch(GVIZ_URL);
+    const txt = await res.text();
+    const jsonStr = txt.replace(/^[^{]+/, "").replace(/;?$/, ""); // recorta wrapper
+    const data = JSON.parse(jsonStr);
+    const cols = data.table.cols.map(c => (c.label || "").toString().toLowerCase());
+
+    // Detecta columnas
+    const priceIdx = cols.findIndex(c => /(precio|price|importe|valor)/i.test(c));
+    const codeIdx  = cols.findIndex(c => /(codigo|código|sku|id|producto|nombre)/i.test(c));
+    const nameIdx  = cols.findIndex(c => /(producto|nombre|descripcion|descripción|detalle|item)/i.test(c));
+
+    data.table.rows.forEach(row => {
+      const c = row.c || [];
+      const rawCode = codeIdx >= 0 && c[codeIdx] ? (c[codeIdx].v ?? c[codeIdx].f ?? "") : "";
+      const rawName = nameIdx >= 0 && c[nameIdx] ? (c[nameIdx].v ?? c[nameIdx].f ?? "") : "";
+      const rawPrice = priceIdx >= 0 && c[priceIdx] ? (c[priceIdx].v ?? c[priceIdx].f ?? "") : "";
+
+      const precioNumber = numberFromAny(rawPrice);
+      if (precioNumber == null) return;
+
+      const keys = new Set();
+      if (rawCode) keys.add(normalizeKey(rawCode));
+      if (rawName) keys.add(normalizeKey(rawName));
+
+      keys.forEach(k => {
+        if (!k) return;
+        priceIndex[k] = {
+          nombre: String(rawName || rawCode || "").trim(),
+          precioNumber
+        };
+      });
+    });
+  } catch (e) {
+    console.warn("No se pudieron cargar precios desde Sheets:", e);
+  }
+}
+
+// Llama una vez al inicio
+loadPricesFromSheet();
+
+function tryGetPriceForImage(img, altName) {
+  const src = img.getAttribute("src") || "";
+  const file = src.split("/").pop() || "";
+  const base = file.replace(/\.(jpg|jpeg|png|webp)$/i, "");
+
+  const candidates = [
+    normalizeKey(base),
+    normalizeKey(altName),
+  ];
+
+  for (const key of candidates) {
+    if (key && priceIndex[key]) {
+      return priceIndex[key];
+    }
+  }
+  return null;
+}
