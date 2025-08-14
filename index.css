@@ -4,7 +4,7 @@ body {
   background-size: contain; /* mejor que contain para ocupar toda la pantalla */
   background-repeat: no-repeat;
   background-position: center center;
-  background-attachment: fixed;
+  background-attachment: scroll;
   transition: background-image 1s ease-in-out;
   background-color: transparent; /* o directamente eliminar */
   color: #444;
