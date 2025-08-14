@@ -1,16 +1,40 @@
-// index.js - Controla el splash, modales, carrito y precios debajo de cada producto
+// index.js - Controla el splash, modales, carrito y precios debajo de cada producto (versión robusta)
 
 // =========================
-// Splash screen
+// Splash screen (robusto con múltiples disparadores/fallback)
 // =========================
-window.addEventListener("load", function () {
-  setTimeout(function () {
+(function setupSplash() {
+  let splashHidden = false;
+  function hideSplash() {
+    if (splashHidden) return;
+    splashHidden = true;
     const splash = document.getElementById("splash");
     const contenido = document.getElementById("contenido-principal");
     if (splash) splash.style.display = "none";
     if (contenido) contenido.style.display = "block";
-  }, 2500); // 2.5 segundos
-});
+  }
+
+  // 1) En DOM listo (rápido)
+  document.addEventListener("DOMContentLoaded", () => {
+    setTimeout(hideSplash, 1200);
+  });
+
+  // 2) En load (cuando cargan imágenes, etc.)
+  window.addEventListener("load", () => {
+    setTimeout(hideSplash, 1200);
+  });
+
+  // 3) Fallback duro por si algo falla (máximo 6s)
+  setTimeout(hideSplash, 6000);
+
+  // 4) También si el usuario toca el logo (útil en móviles)
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    if (t && (t.id === "splash" || (t.classList && t.classList.contains("logo")))) {
+      hideSplash();
+    }
+  });
+})();
 
 /**
  * === REGLAS IMPORTANTES ===
@@ -70,28 +94,31 @@ function formatARS(n) {
 // Slideshow de fondo desde las imágenes existentes
 // =========================
 (function setupBackgroundFromMedia() {
-  const imgs = Array.from(document.querySelectorAll(".subgrupo-fila img"));
-  const sources = Array.from(
-    new Set(imgs.map((img) => img.getAttribute("src")).filter(Boolean))
-  );
-  if (sources.length === 0) return;
+  try {
+    const imgs = Array.from(document.querySelectorAll(".subgrupo-fila img"));
+    const sources = Array.from(
+      new Set(imgs.map((img) => img.getAttribute("src")).filter(Boolean))
+    );
+    if (sources.length === 0) return;
 
-  // Preload
-  sources.forEach((src) => {
-    const im = new Image();
-    im.src = src;
-  });
+    sources.forEach((src) => {
+      const im = new Image();
+      im.src = src;
+    });
 
-  let idx = 0;
-  function applyBg(i) {
-    document.body.style.backgroundImage = "url('" + sources[i] + "')";
-  }
-  applyBg(idx);
-
-  setInterval(() => {
-    idx = (idx + 1) % sources.length;
+    let idx = 0;
+    function applyBg(i) {
+      document.body.style.backgroundImage = "url('" + sources[i] + "')";
+    }
     applyBg(idx);
-  }, 6000);
+
+    setInterval(() => {
+      idx = (idx + 1) % sources.length;
+      applyBg(idx);
+    }, 6000);
+  } catch (e) {
+    console.warn("Slideshow no iniciado:", e);
+  }
 })();
 
 // =========================
@@ -197,27 +224,31 @@ function renderCart() {
 
 // Botones Vaciar / Finalizar
 (function setupCartButtons() {
-  const btnClear = document.getElementById("clearCart");
-  const btnCheckout = document.getElementById("checkout");
-  if (btnClear) {
-    btnClear.addEventListener("click", () => {
-      cartState.items = [];
-      renderCart();
-    });
-  }
-  if (btnCheckout) {
-    btnCheckout.addEventListener("click", () => {
-      if (cartState.items.length === 0) return;
-      const lines = cartState.items
-        .map((it) => {
-          const price = typeof it.price === "number" ? ` (${formatARS(it.price)} c/u)` : "";
-          return `• ${it.nombre} x${it.qty}${price}`;
-        })
-        .join("%0A");
-      const msg = `Hola 👋 Quiero finalizar esta compra:%0A${lines}`;
-      const url = "https://wa.me/5491169754570?text=" + msg;
-      window.open(url, "_blank");
-    });
+  try {
+    const btnClear = document.getElementById("clearCart");
+    const btnCheckout = document.getElementById("checkout");
+    if (btnClear) {
+      btnClear.addEventListener("click", () => {
+        cartState.items = [];
+        renderCart();
+      });
+    }
+    if (btnCheckout) {
+      btnCheckout.addEventListener("click", () => {
+        if (cartState.items.length === 0) return;
+        const lines = cartState.items
+          .map((it) => {
+            const price = typeof it.price === "number" ? ` (${formatARS(it.price)} c/u)` : "";
+            return `• ${it.nombre} x${it.qty}${price}`;
+          })
+          .join("%0A");
+        const msg = `Hola 👋 Quiero finalizar esta compra:%0A${lines}`;
+        const url = "https://wa.me/5491169754570?text=" + msg;
+        window.open(url, "_blank");
+      });
+    }
+  } catch (e) {
+    console.warn("Botones de carrito no inicializados:", e);
   }
 })();
 
@@ -260,7 +291,7 @@ async function loadPricesFromSheet() {
     const codeIdx = cols.findIndex((c) => /(codigo|código|sku|id|producto|nombre)/i.test(c));
     const nameIdx = cols.findIndex((c) => /(producto|nombre|descripcion|descripción|detalle|item)/i.test(c));
 
-    data.table.rows.forEach((row) => {
+    (data.table.rows || []).forEach((row) => {
       const c = row.c || [];
       const rawCode = codeIdx >= 0 && c[codeIdx] ? c[codeIdx].v ?? c[codeIdx].f ?? "" : "";
       const rawName = nameIdx >= 0 && c[nameIdx] ? c[nameIdx].v ?? c[nameIdx].f ?? "" : "";
@@ -307,149 +338,153 @@ const pricesReady = loadPricesFromSheet();
 // Modal de imagen con precio + agregar al carrito
 // =========================
 (function setupImageClicksWithModal() {
-  const imgs = document.querySelectorAll(".subgrupo-fila img");
-  const modal = document.getElementById("modal");
-  const imagenAmpliada = document.getElementById("imagen-ampliada");
-  const nombreEl = document.getElementById("nombre-amigurumi");
-  const descripcionEl = document.getElementById("historia-amigurumi");
-  const link = document.getElementById("whatsapp-link");
-  const descBox = document.getElementById("descripcion");
+  try {
+    const imgs = document.querySelectorAll(".subgrupo-fila img");
+    const modal = document.getElementById("modal");
+    const imagenAmpliada = document.getElementById("imagen-ampliada");
+    const nombreEl = document.getElementById("nombre-amigurumi");
+    const descripcionEl = document.getElementById("historia-amigurumi");
+    const link = document.getElementById("whatsapp-link");
+    const descBox = document.getElementById("descripcion");
 
-  imgs.forEach((img) => {
-    img.addEventListener("click", async () => {
-      // Asegura que los precios ya se cargaron
-      await pricesReady;
+    imgs.forEach((img) => {
+      img.addEventListener("click", async () => {
+        await pricesReady;
 
-      const alt = img.getAttribute("alt") || "Producto";
-      const nombre = nombreDesdeAlt(alt);
-      const descripcion = descripcionGenerica(nombre, img.getAttribute("src"));
+        const alt = img.getAttribute("alt") || "Producto";
+        const nombre = nombreDesdeAlt(alt);
+        const descripcion = descripcionGenerica(nombre, img.getAttribute("src"));
 
-      if (imagenAmpliada) imagenAmpliada.src = img.src;
-      if (nombreEl) nombreEl.textContent = nombre;
-      if (descripcionEl) descripcionEl.textContent = descripcion;
+        if (imagenAmpliada) imagenAmpliada.src = img.src;
+        if (nombreEl) nombreEl.textContent = nombre;
+        if (descripcionEl) descripcionEl.textContent = descripcion;
 
-      // Precio desde Sheets
-      const priceData = tryGetPriceForImage(img, nombre);
-      let precioTxt = "";
-      let precioNumber = null;
-      if (priceData && typeof priceData.precioNumber === "number") {
-        precioNumber = priceData.precioNumber;
-        precioTxt = "Precio: " + formatARS(precioNumber);
-      } else {
-        precioTxt = "Precio: consultar";
-      }
+        // Precio desde Sheets
+        const priceData = tryGetPriceForImage(img, nombre);
+        let precioTxt = "";
+        let precioNumber = null;
+        if (priceData && typeof priceData.precioNumber === "number") {
+          precioNumber = priceData.precioNumber;
+          precioTxt = "Precio: " + formatARS(precioNumber);
+        } else {
+          precioTxt = "Precio: consultar";
+        }
 
-      // Inserta/actualiza bloque de precio
-      let priceBlock = document.getElementById("modal-price");
-      if (!priceBlock) {
-        priceBlock = document.createElement("p");
-        priceBlock.id = "modal-price";
-        priceBlock.style.marginTop = "8px";
-        priceBlock.style.fontWeight = "600";
-        if (descBox) descBox.appendChild(priceBlock);
-      }
-      priceBlock.textContent = precioTxt;
+        let priceBlock = document.getElementById("modal-price");
+        if (!priceBlock) {
+          priceBlock = document.createElement("p");
+          priceBlock.id = "modal-price";
+          priceBlock.style.marginTop = "8px";
+          priceBlock.style.fontWeight = "600";
+          if (descBox) descBox.appendChild(priceBlock);
+        }
+        priceBlock.textContent = precioTxt;
 
-      // Guarda en dataset del modal para usar al agregar al carrito
-      if (descBox) {
-        descBox.dataset.priceNumber = precioNumber != null ? String(precioNumber) : "";
-      }
+        if (descBox) {
+          descBox.dataset.priceNumber = precioNumber != null ? String(precioNumber) : "";
+        }
 
-      const mensaje = encodeURIComponent(
-        `Hola 👋 Me interesa el producto: ${nombre}. ¿Me pasás precio, colores y demora?`
-      );
-      if (link) link.href = WHATSAPP_BASE + mensaje;
+        const mensaje = encodeURIComponent(
+          `Hola 👋 Me interesa el producto: ${nombre}. ¿Me pasás precio, colores y demora?`
+        );
+        if (link) link.href = WHATSAPP_BASE + mensaje;
 
-      if (modal) modal.style.display = "flex";
+        if (modal) modal.style.display = "flex";
+      });
     });
-  });
 
-  // Cierre modal
-  const closeBtn = document.querySelector(".cerrar");
-  if (closeBtn) {
-    closeBtn.addEventListener("click", () => {
-      if (modal) modal.style.display = "none";
-    });
-  }
-  if (modal) {
-    modal.addEventListener("click", (event) => {
-      if (event.target.id === "modal") {
-        event.currentTarget.style.display = "none";
-      }
-    });
+    // Cierre modal
+    const closeBtn = document.querySelector(".cerrar");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", () => {
+        if (modal) modal.style.display = "none";
+      });
+    }
+    if (modal) {
+      modal.addEventListener("click", (event) => {
+        if (event.target.id === "modal") {
+          event.currentTarget.style.display = "none";
+        }
+      });
+    }
+  } catch (e) {
+    console.warn("Modal no inicializado:", e);
   }
 })();
 
 // Inyecta selector de cantidad y botón "Agregar al carrito" en el modal
 (function injectModalControls() {
-  const modal = document.getElementById("modal");
-  const descBox = document.getElementById("descripcion");
-  if (!modal || !descBox) return;
+  try {
+    const modal = document.getElementById("modal");
+    const descBox = document.getElementById("descripcion");
+    if (!modal || !descBox) return;
 
-  const controls = document.createElement("div");
-  controls.id = "modal-controls";
-  controls.style.marginTop = "12px";
-  controls.style.display = "flex";
-  controls.style.alignItems = "center";
-  controls.style.gap = "8px";
-  controls.style.justifyContent = "center";
+    const controls = document.createElement("div");
+    controls.id = "modal-controls";
+    controls.style.marginTop = "12px";
+    controls.style.display = "flex";
+    controls.style.alignItems = "center";
+    controls.style.gap = "8px";
+    controls.style.justifyContent = "center";
 
-  const label = document.createElement("label");
-  label.textContent = "Cantidad:";
+    const label = document.createElement("label");
+    label.textContent = "Cantidad:";
 
-  const qtyInput = document.createElement("input");
-  qtyInput.type = "number";
-  qtyInput.min = "1";
-  qtyInput.value = "1";
-  qtyInput.id = "modal-qty";
-  qtyInput.style.width = "72px";
-  qtyInput.style.padding = "6px";
+    const qtyInput = document.createElement("input");
+    qtyInput.type = "number";
+    qtyInput.min = "1";
+    qtyInput.value = "1";
+    qtyInput.id = "modal-qty";
+    qtyInput.style.width = "72px";
+    qtyInput.style.padding = "6px";
 
-  const addBtn = document.createElement("button");
-  addBtn.textContent = "Agregar al carrito";
-  addBtn.type = "button";
-  addBtn.id = "modal-add";
+    const addBtn = document.createElement("button");
+    addBtn.textContent = "Agregar al carrito";
+    addBtn.type = "button";
+    addBtn.id = "modal-add";
 
-  controls.append(label, qtyInput, addBtn);
-  descBox.appendChild(controls);
+    controls.append(label, qtyInput, addBtn);
+    descBox.appendChild(controls);
 
-  // Guardamos la última imagen cliqueada
-  let lastClickedImg = null;
-  document.querySelectorAll(".subgrupo-fila img").forEach((img) => {
-    img.addEventListener("click", () => {
-      lastClickedImg = img;
-      qtyInput.value = "1"; // reset
+    // Guardamos la última imagen cliqueada
+    let lastClickedImg = null;
+    document.querySelectorAll(".subgrupo-fila img").forEach((img) => {
+      img.addEventListener("click", () => {
+        lastClickedImg = img;
+        qtyInput.value = "1"; // reset
+      });
     });
-  });
 
-  addBtn.addEventListener("click", () => {
-    if (!lastClickedImg) return;
+    addBtn.addEventListener("click", () => {
+      if (!lastClickedImg) return;
 
-    const id = productIdFromImg(lastClickedImg);
-    const nombre = (document.getElementById("nombre-amigurumi").textContent || "Producto").trim();
-    const qty = Math.max(1, parseInt(qtyInput.value || "1", 10));
+      const id = productIdFromImg(lastClickedImg);
+      const nombre = (document.getElementById("nombre-amigurumi").textContent || "Producto").trim();
+      const qty = Math.max(1, parseInt(qtyInput.value || "1", 10));
 
-    // Precio almacenado en dataset del modal (si existe)
-    let priceNum = null;
-    if (descBox && descBox.dataset && descBox.dataset.priceNumber) {
-      const p = parseFloat(descBox.dataset.priceNumber);
-      if (isFinite(p)) priceNum = p;
-    }
-
-    const existing = cartState.items.find((i) => i.id === id);
-    if (existing) {
-      existing.qty += qty;
-      // Si apareció precio ahora y antes no lo tenía, lo guardamos
-      if (typeof existing.price !== "number" && typeof priceNum === "number") {
-        existing.price = priceNum;
+      // Precio almacenado en dataset del modal (si existe)
+      let priceNum = null;
+      if (descBox && descBox.dataset && descBox.dataset.priceNumber) {
+        const p = parseFloat(descBox.dataset.priceNumber);
+        if (isFinite(p)) priceNum = p;
       }
-    } else {
-      const item = { id, nombre, qty };
-      if (typeof priceNum === "number") item.price = priceNum;
-      cartState.items.push(item);
-    }
-    renderCart();
-  });
+
+      const existing = cartState.items.find((i) => i.id === id);
+      if (existing) {
+        existing.qty += qty;
+        if (typeof existing.price !== "number" && typeof priceNum === "number") {
+          existing.price = priceNum;
+        }
+      } else {
+        const item = { id, nombre, qty };
+        if (typeof priceNum === "number") item.price = priceNum;
+        cartState.items.push(item);
+      }
+      renderCart();
+    });
+  } catch (e) {
+    console.warn("Controles de modal no inicializados:", e);
+  }
 })();
 
 // Inicializa contador en 0
@@ -459,33 +494,40 @@ renderCart();
 // Mostrar precio DEBAJO de cada imagen en la galería
 // =========================
 async function initPricesBelowImages() {
-  // Espera a que se hayan cargado los precios
-  await pricesReady;
+  try {
+    await pricesReady;
 
-  document.querySelectorAll(".subgrupo-fila img").forEach((img) => {
-    // Evitar duplicar etiquetas de precio si ya existen
-    if (img.nextElementSibling && img.nextElementSibling.classList && img.nextElementSibling.classList.contains("price-tag")) {
-      return;
-    }
+    document.querySelectorAll(".subgrupo-fila img").forEach((img) => {
+      // Evitar duplicar etiquetas de precio si ya existen
+      if (
+        img.nextElementSibling &&
+        img.nextElementSibling.classList &&
+        img.nextElementSibling.classList.contains("price-tag")
+      ) {
+        return;
+      }
 
-    const nombre = nombreDesdeAlt(img.getAttribute("alt"));
-    const priceData = tryGetPriceForImage(img, nombre);
-    const precioTxt =
-      priceData && typeof priceData.precioNumber === "number"
-        ? formatARS(priceData.precioNumber)
-        : "Consultar";
+      const nombre = nombreDesdeAlt(img.getAttribute("alt"));
+      const priceData = tryGetPriceForImage(img, nombre);
+      const precioTxt =
+        priceData && typeof priceData.precioNumber === "number"
+          ? formatARS(priceData.precioNumber)
+          : "Consultar";
 
-    const priceTag = document.createElement("div");
-    priceTag.className = "price-tag";
-    priceTag.textContent = precioTxt;
-    priceTag.style.fontWeight = "bold";
-    priceTag.style.textAlign = "center";
-    priceTag.style.marginTop = "4px";
-    priceTag.style.color = "#d63384";
-    priceTag.style.textShadow = "0 1px 0 rgba(255,255,255,0.75)";
+      const priceTag = document.createElement("div");
+      priceTag.className = "price-tag";
+      priceTag.textContent = precioTxt;
+      priceTag.style.fontWeight = "bold";
+      priceTag.style.textAlign = "center";
+      priceTag.style.marginTop = "4px";
+      priceTag.style.color = "#d63384";
+      priceTag.style.textShadow = "0 1px 0 rgba(255,255,255,0.75)";
 
-    img.insertAdjacentElement("afterend", priceTag);
-  });
+      img.insertAdjacentElement("afterend", priceTag);
+    });
+  } catch (e) {
+    console.warn("No se pudieron pintar precios debajo de imágenes:", e);
+  }
 }
 
 // Lanzamos la pinta de precios bajo cada imagen
