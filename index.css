@@ -367,3 +367,13 @@ footer {
   cursor: pointer;
   font-weight: bold;
 }
+
+/* === Fallback para que el splash no bloquee si falla JS === */
+#splash {
+  animation: splashFade 5s ease 1 forwards;
+}
+@keyframes splashFade {
+  0% { opacity: 1; }
+  90% { opacity: 0; }
+  100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}

@@ -1,3 +1,22 @@
+
+// === Anti-colgado del splash ===
+(function hardSplashKill(){
+  function show(){
+    try{
+      var s = document.getElementById('splash');
+      var m = document.getElementById('contenido-principal');
+      if (s) s.style.display = 'none';
+      if (m) m.style.display = 'block';
+    }catch(e){ /* noop */ }
+  }
+  // Varias garantías de ejecución
+  document.addEventListener('DOMContentLoaded', show);
+  window.addEventListener('load', show);
+  setTimeout(show, 2000);
+  setTimeout(show, 4000); // doble fallback
+})();
+// === Fin Anti-colgado ===
+
 // index.js — comportamiento de splash, fondo y modal
 document.addEventListener("DOMContentLoaded", function () {
   const splash = document.getElementById("splash");
@@ -304,3 +323,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+
+
+// Si ocurre cualquier error no controlado, ocultamos igual el splash
+window.addEventListener('error', function(){
+  try{
+    var s = document.getElementById('splash');
+    var m = document.getElementById('contenido-principal');
+    if (s) s.style.display = 'none';
+    if (m) m.style.display = 'block';
+  }catch(e){}
+});
