@@ -213,3 +213,38 @@ footer {
     max-width: 150px;
   }
 }
+
+
+/* === Productos dinámicos === */
+.card {
+  background: rgba(255,255,255,0.9);
+  border: 1px solid #ffd1dc;
+  border-radius: 16px;
+  padding: 12px;
+  width: 220px;
+  flex: 0 0 auto;
+  text-align: center;
+  box-shadow: 0 6px 14px rgba(214,51,132,0.08);
+}
+.card img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+.card h4 { margin: 6px 0; color:#b61c6b; font-size:1.05rem; }
+.card p { margin: 4px 0; color:#333; }
+.btn-buy {
+  display:inline-block;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background:#ffe4ec;
+  color:#b61c6b;
+  font-weight:700;
+  text-decoration:none;
+  border:1px solid #ffc0cb;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.btn-buy:hover { transform: translateY(-1px); box-shadow: 0 6px 12px rgba(0,0,0,0.08); }

@@ -97,3 +97,83 @@ document.getElementById("modal").addEventListener("click", (event) => {
     applyBg(idx);
   }, 6000);
 })();
+
+
+/* === Productos desde Google Sheets === */
+(function(){
+  const SHEET_ID   = "1nJIU0ky7Ih_6zUF1M2ui3JVsLmdLXwgVXxpWt3ToiqM";
+  const SHEET_NAME = "Hoja 1"; // Cambiá si tu pestaña se llama distinto
+  const SHEET_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}&cachebust=${Date.now()}`;
+
+  async function fetchProducts(){
+    const res = await fetch(SHEET_URL, { cache: "no-store" });
+    const txt = await res.text();
+    // gviz envuelve el JSON en una función, por eso recortamos:
+    const json = JSON.parse(txt.substring(47, txt.length - 2));
+    const cols = json.table.cols.map(c => (c.label || "").toLowerCase().trim());
+    const rows = json.table.rows.map(r => r.c.map(c => c?.v ?? ""));
+
+    // Columnas esperadas (al menos): id, nombre, precio
+    const idx = {
+      id: cols.indexOf("id"),
+      nombre: cols.indexOf("nombre"),
+      precio: cols.indexOf("precio"),
+      stock: cols.indexOf("stock"),
+      imagen: cols.indexOf("imagen"),
+      activo: cols.indexOf("activo"),
+      descripcion: cols.indexOf("descripcion"),
+    };
+
+    function val(r, k){
+      const i = idx[k];
+      return i >= 0 ? r[i] : "";
+    }
+
+    const productos = rows.map(r => {
+      const activo = String(val(r, "activo")).toLowerCase();
+      const isActive = (activo === "" || activo === "true" || activo === "si" || activo === "sí" || activo === "1");
+      const precioNum = Number(val(r, "precio"));
+      return {
+        id: String(val(r, "id") || ""),
+        nombre: String(val(r, "nombre") || ""),
+        precio: Number.isFinite(precioNum) ? precioNum : 0,
+        stock: Number(val(r, "stock") || 0),
+        imagen: val(r, "imagen") || "media/logo.jpeg",
+        activo: isActive,
+        descripcion: String(val(r, "descripcion") || ""),
+      };
+    }).filter(p => p.activo && p.nombre && Number.isFinite(p.precio));
+
+    return productos;
+  }
+
+  function renderProductos(list){
+    const el = document.getElementById("lista-productos");
+    if (!el) return;
+    el.innerHTML = "";
+    list.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+      const precio = `$ ${p.precio.toLocaleString("es-AR")}`;
+      const wa = `https://wa.me/5491169754570?text=${encodeURIComponent("Hola! Quiero comprar: " + p.nombre + " (" + precio + ")")}`;
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}">
+        <h4>${p.nombre}</h4>
+        <p><strong>${precio}</strong></p>
+        ${p.descripcion ? `<p class="muted">${p.descripcion}</p>` : ``}
+        <a class="btn-buy" href="${wa}" target="_blank" rel="noopener">Comprar por WhatsApp</a>
+      `;
+      el.appendChild(card);
+    });
+  }
+
+  // Cargar al inicio (después de que aparezca el contenido principal)
+  window.addEventListener("load", async () => {
+    try{
+      const productos = await fetchProducts();
+      renderProductos(productos);
+    }catch(err){
+      console.error("No pudimos cargar productos desde Google Sheets:", err);
+    }
+  });
+})();
