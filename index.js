@@ -136,6 +136,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const precio = (filas[i][idxPrecio] || '').trim();
         if (nombre) mapa[nombre] = precio;
       }
+      window.priceMap = mapa;
       document.querySelectorAll('.producto').forEach(prod => {
         const clave = prod.dataset.nombre || prod.querySelector('img')?.alt || '';
         let precio = mapa[clave];
@@ -154,4 +155,152 @@ document.addEventListener("DOMContentLoaded", function () {
       console.error('No se pudieron cargar precios desde Sheets:', err);
     });
 })();
+
+// === Carrito de compras ===
+const Cart = (() => {
+  let items = []; // {nombre, precioNum, qty, img}
+  const load = () => {
+    try { items = JSON.parse(localStorage.getItem('cart_items') || '[]'); } catch { items = []; }
+  };
+  const save = () => localStorage.setItem('cart_items', JSON.stringify(items));
+  const count = () => items.reduce((a,b)=>a + b.qty, 0);
+  const total = () => items.reduce((a,b)=>a + (b.precioNum * b.qty), 0);
+  const add = (nombre, precioNum, qty, img) => {
+    const i = items.findIndex(x => x.nombre.toLowerCase() === nombre.toLowerCase());
+    if (i >= 0) items[i].qty += qty;
+    else items.push({nombre, precioNum, qty, img});
+    save(); UI.updateBadge(); UI.render();
+  };
+  const updateQty = (nombre, qty) => {
+    const it = items.find(x => x.nombre.toLowerCase() === nombre.toLowerCase());
+    if (!it) return;
+    it.qty = Math.max(1, qty|0);
+    save(); UI.updateBadge(); UI.render();
+  };
+  const remove = (nombre) => {
+    items = items.filter(x => x.nombre.toLowerCase() !== nombre.toLowerCase());
+    save(); UI.updateBadge(); UI.render();
+  };
+  const clear = () => { items = []; save(); UI.updateBadge(); UI.render(); };
+  const get = () => items.slice();
+  const UI = {
+    updateBadge(){
+      const badge = document.getElementById('cart-count');
+      if (badge) badge.textContent = String(count());
+    },
+    render(){
+      const cont = document.getElementById('cart-items');
+      const tot = document.getElementById('cart-total-amount');
+      if (!cont) return;
+      cont.innerHTML = '';
+      get().forEach(it => {
+        const row = document.createElement('div');
+        row.className = 'cart-item';
+        row.innerHTML = \`
+          <img src="\${it.img}" alt="\${it.nombre}">
+          <div>\${it.nombre}</div>
+          <div>$\${it.precioNum.toLocaleString('es-AR')}</div>
+          <div>
+            <input type="number" min="1" value="\${it.qty}" data-nombre="\${it.nombre}" class="cart-qty" />
+          </div>
+          <button class="cart-remove" data-nombre="\${it.nombre}">✕</button>
+        \`;
+        cont.appendChild(row);
+      });
+      if (tot) tot.textContent = '$' + total().toLocaleString('es-AR');
+      // bind qty & remove
+      cont.querySelectorAll('.cart-qty').forEach(inp => {
+        inp.addEventListener('change', e => {
+          const nombre = e.target.getAttribute('data-nombre');
+          Cart.updateQty(nombre, parseInt(e.target.value || '1', 10));
+        });
+      });
+      cont.querySelectorAll('.cart-remove').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const nombre = e.target.getAttribute('data-nombre');
+          Cart.remove(nombre);
+        });
+      });
+    },
+    open(){ const m = document.getElementById('cart-modal'); if (m) m.style.display = 'flex'; },
+    close(){ const m = document.getElementById('cart-modal'); if (m) m.style.display = 'none'; }
+  };
+  // listeners globales
+  document.addEventListener('DOMContentLoaded', () => {
+    load(); UI.updateBadge();
+    const btn = document.getElementById('cart-btn');
+    if (btn) btn.addEventListener('click', UI.open);
+    const close = document.getElementById('close-cart');
+    if (close) close.addEventListener('click', UI.close);
+    const clear = document.getElementById('clear-cart');
+    if (clear) clear.addEventListener('click', clearCart);
+    const checkout = document.getElementById('checkout-cart');
+    if (checkout) checkout.addEventListener('click', () => {
+      // Simple: armar mensaje de WhatsApp con el detalle del carrito
+      const detalle = get().map(it => \`\${it.nombre} x\${it.qty} - $\${(it.precioNum*it.qty).toLocaleString('es-AR')}\`).join('%0A');
+      const totalStr = total().toLocaleString('es-AR');
+      const msg = \`Hola! Quiero confirmar este pedido:%0A\${detalle}%0ATotal: $\${totalStr}\`;
+      window.open('https://wa.me/541169754570?text=' + msg, '_blank');
+    });
+    function clearCart(){ Cart.clear(); }
+  });
+  return { add, updateQty, remove, clear, get };
+})();
+
+// Exponer priceMap global desde la carga de Sheets
+window.priceMap = window.priceMap || {};
+
+// === Integración modal con carrito y precios ===
+document.addEventListener('DOMContentLoaded', () => {
+  const precioModal = document.getElementById('precio-modal');
+  const qtyModal = document.getElementById('qty-modal');
+  const addBtn = document.getElementById('add-to-cart');
+  const imagenAmpliada = document.getElementById('imagen-ampliada');
+  const nombreEl = document.getElementById('nombre-amigurumi');
+
+  // al abrir modal (ya lo hace el código existente), actualizaremos precio y qty=1
+  function actualizarPrecioModal(nombre) {
+    if (!precioModal) return;
+    let precioTxt = '';
+    let precioNum = 0;
+    if (window.priceMap && Object.keys(window.priceMap).length) {
+      let key = Object.keys(window.priceMap).find(k => k.toLowerCase() == nombre.toLowerCase());
+      if (!key) key = Object.keys(window.priceMap).find(k => nombre.toLowerCase().includes(k.toLowerCase()) || k.toLowerCase().includes(nombre.toLowerCase()));
+      if (key) {
+        precioTxt = window.priceMap[key];
+        const num = parseFloat(String(precioTxt).replace(/[^0-9.,]/g,'').replace('.','').replace(',','.'));
+        if (!isNaN(num)) precioNum = num;
+      }
+    }
+    if (precioTxt) {
+      precioModal.textContent = 'Precio: $' + precioTxt;
+      precioModal.dataset.precioNum = precioNum || 0;
+    } else {
+      precioModal.textContent = 'Precio: consultar';
+      precioModal.dataset.precioNum = 0;
+    }
+    if (qtyModal) qtyModal.value = 1;
+  }
+
+  // interceptar cuando se abre el modal: observamos cambios en #nombre-amigurumi
+  const obs = new MutationObserver(() => {
+    const nombre = nombreEl?.textContent?.trim() || '';
+    if (nombre) actualizarPrecioModal(nombre);
+  });
+  if (nombreEl) obs.observe(nombreEl, { childList: true });
+
+  if (addBtn) {
+    addBtn.addEventListener('click', () => {
+      const nombre = (nombreEl?.textContent || '').trim();
+      const qty = parseInt(qtyModal?.value || '1', 10);
+      const precioNum = parseFloat(precioModal?.dataset?.precioNum || '0');
+      const imgSrc = imagenAmpliada?.src || '';
+      if (!nombre || !qty) return;
+      Cart.add(nombre, isNaN(precioNum)?0:precioNum, qty, imgSrc);
+      // feedback simple
+      addBtn.textContent = 'Agregado ✓';
+      setTimeout(() => addBtn.textContent = 'Agregar al carrito', 900);
+    });
+  }
+});
 
