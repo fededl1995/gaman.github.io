@@ -97,3 +97,61 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 });
+
+// === Precios desde Google Sheets ===
+// Ajusta los nombres en la hoja para que coincidan con data-nombre o con el alt de la imagen
+(function cargarPreciosDesdeSheets() {
+  const sheetUrl = "https://docs.google.com/spreadsheets/d/1nJIU0ky7Ih_6zUF1M2ui3JVsLmdLXwgVXxpWt3ToiqM/gviz/tq?tqx=out:csv";
+  fetch(sheetUrl)
+    .then(r => r.text())
+    .then(text => {
+      // Parseo CSV simple (asume separador coma y 2 columnas: Producto,Precio)
+      const filas = text.split(/\r?\n/).filter(Boolean).map(linea => {
+        // Permite comas dentro de comillas básicas
+        const cells = [];
+        let cur = '';
+        let inQuotes = false;
+        for (let i = 0; i < linea.length; i++) {
+          const ch = linea[i];
+          if (ch === '"') {
+            inQuotes = !inQuotes;
+          } else if (ch === ',' && !inQuotes) {
+            cells.push(cur);
+            cur = '';
+          } else {
+            cur += ch;
+          }
+        }
+        cells.push(cur);
+        return cells.map(c => c.replace(/^"|"$/g, '').trim());
+      });
+      if (filas.length <= 1) return;
+      const encabezados = filas[0].map(h => h.toLowerCase());
+      const idxNombre = encabezados.findIndex(h => h.includes('producto') || h.includes('nombre'));
+      const idxPrecio = encabezados.findIndex(h => h.includes('precio'));
+      if (idxNombre === -1 || idxPrecio === -1) return;
+      const mapa = {};
+      for (let i = 1; i < filas.length; i++) {
+        const nombre = (filas[i][idxNombre] || '').trim();
+        const precio = (filas[i][idxPrecio] || '').trim();
+        if (nombre) mapa[nombre] = precio;
+      }
+      document.querySelectorAll('.producto').forEach(prod => {
+        const clave = prod.dataset.nombre || prod.querySelector('img')?.alt || '';
+        let precio = mapa[clave];
+        if (precio === undefined) {
+          // intento con mayúsc/minúsc
+          const claveAlt = Object.keys(mapa).find(k => k.toLowerCase() === clave.toLowerCase());
+          if (claveAlt) precio = mapa[claveAlt];
+        }
+        const precioEl = prod.querySelector('.precio');
+        if (precioEl) {
+          precioEl.textContent = (precio && precio !== '') ? `$${precio}` : 'Precio no disponible';
+        }
+      });
+    })
+    .catch(err => {
+      console.error('No se pudieron cargar precios desde Sheets:', err);
+    });
+})();
+

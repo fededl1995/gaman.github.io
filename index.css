@@ -213,3 +213,40 @@ footer {
     max-width: 150px;
   }
 }
+
+/* === Productos con precio y cantidad === */
+.producto {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 5cm;
+}
+
+.producto img {
+  cursor: pointer;
+  width: 5cm;
+  height: 5cm;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: transform 0.3s;
+}
+
+.producto img:hover {
+  transform: scale(1.05);
+}
+
+.precio {
+  font-weight: bold;
+  color: #d63384;
+  margin-top: 6px;
+}
+
+.cantidad {
+  margin-top: 6px;
+  width: 70px;
+  text-align: center;
+  border: 1px solid #ffa6ba;
+  border-radius: 8px;
+  padding: 4px;
+}
