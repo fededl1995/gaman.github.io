@@ -369,11 +369,14 @@ footer {
 }
 
 /* === Fallback para que el splash no bloquee si falla JS === */
-#splash {
-  animation: splashFade 5s ease 1 forwards;
-}
+#splash { animation: splashFade 0.5s ease 1 forwards; }
 @keyframes splashFade {
   0% { opacity: 1; }
   90% { opacity: 0; }
   100% { opacity: 0; visibility: hidden; pointer-events: none; }
+}
+
+.subgrupo-fila {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 320px;
 }
