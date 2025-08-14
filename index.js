@@ -317,16 +317,67 @@ async function loadPricesFromSheet() {
   }
 }
 
+
 function tryGetPriceForImage(img, altName) {
   const src = img.getAttribute("src") || "";
   const file = src.split("/").pop() || "";
   const base = file.replace(/\.(jpg|jpeg|png|webp)$/i, "");
 
-  const candidates = [normalizeKey(base), normalizeKey(altName)];
+  const candidatesRaw = [base, altName];
+  const candidates = [];
+
+  // Generamos variantes normalizadas y sin prefijos "ami"/"res"
+  candidatesRaw.forEach((c) => {
+    const n = normalizeKey(c || "");
+    if (!n) return;
+    candidates.push(n);
+    // quitar prefijos comunes si existen
+    const withoutAmi = n.replace(/^(ami|amigurumi)\s+/i, "").trim();
+    const withoutRes = n.replace(/^(res|resina)\s+/i, "").trim();
+    if (withoutAmi && withoutAmi !== n) candidates.push(withoutAmi);
+    if (withoutRes && withoutRes !== n) candidates.push(withoutRes);
+  });
+
+  // 1) Exact match
   for (const key of candidates) {
-    if (key && priceIndex[key]) {
-      return priceIndex[key];
+    if (key && priceIndex[key]) return priceIndex[key];
+  }
+
+  // 2) Fuzzy: contiene / incluido (buscamos la clave más larga que coincida)
+  let best = null;
+  let bestLen = 0;
+  const indexKeys = Object.keys(priceIndex);
+  for (const key of candidates) {
+    for (const k of indexKeys) {
+      if (!k) continue;
+      if (key.includes(k) || k.includes(key)) {
+        const len = Math.max(key.length, k.length);
+        if (len > bestLen) {
+          best = priceIndex[k];
+          bestLen = len;
+        }
+      }
     }
+  }
+  if (best) return best;
+
+  // 3) Último recurso: coincidencia de palabras (intersección >= 2 palabras)
+  const splitWords = (s) => s.split(/\s+/).filter(Boolean);
+  const candWordsList = candidates.map(splitWords).filter(arr => arr.length > 0);
+  for (const k of indexKeys) {
+    const kw = splitWords(k);
+    for (const cw of candWordsList) {
+      const inter = new Set(kw.filter(w => cw.includes(w)));
+      if (inter.size >= 2) {
+        return priceIndex[k];
+      }
+    }
+  }
+
+  // sin precio
+  return null;
+}
+
   }
   return null;
 }
