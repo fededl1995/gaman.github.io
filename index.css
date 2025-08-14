@@ -229,3 +229,51 @@ footer {
   box-shadow: 0 10px 24px rgba(214,51,132,0.15);
   z-index: 99999;
 }
+
+
+
+/* === Hardening: aseguro interactividad y capas correctas === */
+#splash{
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  z-index: 100000;
+}
+#contenido-principal{ display:none; }
+
+.modal{
+  position: fixed;
+  inset: 0;
+  display: none; /* se muestra con JS */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.6);
+  z-index: 99999;
+}
+.modal-imagen{
+  max-width: 90vw;
+  max-height: 70vh;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.25);
+}
+.descripcion-amigurumi{
+  background: #fff;
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  width: min(90vw, 520px);
+  box-shadow: 0 10px 24px rgba(214,51,132,0.15);
+  text-align: center;
+}
+
+.subgrupo-fila{ position: relative; z-index: 1; }
+.subgrupo-fila img{ cursor: pointer; }
+
+.price-tag{ pointer-events: auto; cursor: pointer; }
+
+/* WhatsApp flotante por debajo del modal */
+.whatsapp{ z-index: 10; position: fixed; right: 18px; bottom: 18px; }
+
