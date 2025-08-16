@@ -53,12 +53,12 @@ document.querySelectorAll(".subgrupo-fila img").forEach((img, i) => {
       imagenAmpliada.src = img.src;
       nombre.textContent = datos[alt].nombre;
       historia.textContent = datos[alt].historia;
-      link.href = datos[alt].whatsapp;
+      if (link) link.href = datos[alt].whatsapp;
     } else {
       imagenAmpliada.src = img.src;
       nombre.textContent = alt;
       historia.textContent = "Amigurumi artesanal hecho con dedicación.";
-      link.href = "https://wa.me/549XXXXXXXXXX?text=Hola!%20Quiero%20consultar%20por%20el%20amigurumi%20" + encodeURIComponent(alt);
+      if (link) link.href = "https://wa.me/549XXXXXXXXXX?text=Hola!%20Quiero%20consultar%20por%20el%20amigurumi%20" + encodeURIComponent(alt);
     }
 
     modal.style.display = "flex";
